@@ -14,18 +14,21 @@
 
 #include <Servo.h>
 #include <Ethernet.h>
-#include <EthernetUdp.h>
+#include "rgb_lcd.h"
+//#include <EthernetUdp.h>
 
+rgb_lcd lcd;
+const int colorR = 255;
+const int colorG = 0;
+const int colorB = 0;
+boolean currentLineIsBlank;
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 IPAddress ip(192, 168, 1, 177);
-
 unsigned int localPort = 8888;      // local port to listen on
-
-
 
 Servo myservo1;  // create servo object to control a servo
 Servo myservo2;
@@ -47,9 +50,22 @@ char ReplyBuffer[] = "acknowledged";        // a string to send back
 EthernetUDP Udp;
 
 void setup() {
+  
  myservo1.attach(9);
  myservo2.attach(6); 
-  
+
+lcd.begin(16, 2);
+
+lcd.setRGB(colorR, colorG, colorB);
+lcd.print("Demarrage ^_^ <3");
+delay(2000);
+lcd.clear();
+delay(1000);
+lcd.setCursor(0,0);
+// Print a message to the LCD.
+lcd.print("Adresse IP");
+delay(1000);
+
   // You can use Ethernet.init(pin) to configure the CS pin
   //Ethernet.init(10);  // Most Arduino shields
   //Ethernet.init(5);   // MKR ETH shield
@@ -82,10 +98,10 @@ void setup() {
   // print your local IP address:
   Serial.print("My IP address: ");
   Serial.println(Ethernet.localIP());
-
+lcd.setCursor(0, 1);
+lcd.print(Ethernet.localIP());
   
-
-
+Ethernet.begin(mac, Ethernet.localIP());
   // start UDP
   Udp.begin(localPort);
 }
